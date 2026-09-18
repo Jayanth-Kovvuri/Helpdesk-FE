@@ -8,6 +8,7 @@ export const handlers = [
       user: {
         id: 1,
         email: 'customer@helpdesk.local',
+        name: 'Alice Johnson',
         role: { code: 'customer', label: 'Customer' },
         disabled: false,
       },
@@ -29,6 +30,7 @@ export const handlers = [
         customer: {
           id: 1,
           email: 'customer@helpdesk.local',
+          name: 'Alice Johnson',
           role: { code: 'customer', label: 'Customer' },
           disabled: false,
         },
@@ -57,6 +59,7 @@ export const handlers = [
         user: {
           id: 1,
           email: 'customer@helpdesk.local',
+          name: 'Alice Johnson',
           role: { code: 'customer', label: 'Customer' },
           disabled: false,
         },

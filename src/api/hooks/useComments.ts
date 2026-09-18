@@ -21,11 +21,15 @@ export function useCreateComment(ticketId: number) {
   const locale = useUiStore((state) => state.locale);
 
   return useMutation({
-    mutationFn: (body: string) => commentService.create(ticketId, body, locale),
-    onSuccess: () => {
+    mutationFn: ({ body, file }: { body: string; file?: File }) =>
+      commentService.create(ticketId, body, locale, file),
+    onSuccess: (_data, variables) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.comments(ticketId) });
       void queryClient.invalidateQueries({ queryKey: queryKeys.tickets.detail(ticketId) });
       void queryClient.invalidateQueries({ queryKey: queryKeys.tickets.all });
+      if (variables.file) {
+        void queryClient.invalidateQueries({ queryKey: queryKeys.attachments(ticketId) });
+      }
     },
   });
 }

@@ -1,9 +1,9 @@
 import type { Ticket } from '@/types/api';
 
-/** Instant filter for queries shorter than the server minimum (2 chars). */
+/** Narrows the table rows to match the search box (title, description, status, priority). */
 export function filterTicketsClient(tickets: Ticket[], query: string): Ticket[] {
   const q = query.trim().toLowerCase();
-  if (q.length === 0 || q.length >= 2) {
+  if (q.length === 0) {
     return tickets;
   }
 

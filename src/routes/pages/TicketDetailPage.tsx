@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useParams } from '@tanstack/react-router';
+import { useParams, useRouter } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -9,8 +9,15 @@ import { useAttachments, useDeleteAttachment, useUploadAttachment } from '@/api/
 import { useComments, useCreateComment, useDeleteComment } from '@/api/hooks/useComments';
 import { useAllTags, useAttachTag, useDetachTag } from '@/api/hooks/useTags';
 import { useDeleteTicket, useTicket, useUpdateTicket } from '@/api/hooks/useTickets';
+import { AttachmentRow } from '@/components/attachments/AttachmentRow';
 import { Button } from '@/components/ui/Button';
+import { FilePickButton } from '@/components/ui/FilePickButton';
+import { cn } from '@/lib/cn';
+import { selectFieldClass } from '@/lib/selectFieldClass';
+import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { Input } from '@/components/ui/Input';
+import { ToastContainer } from '@/components/ui/Toast';
+import { useToast } from '@/hooks/useToast';
 import {
   commentSchema,
   ticketAdminUpdateSchema,
@@ -20,9 +27,11 @@ import {
 
 export default function TicketDetailPage() {
   const { t } = useTranslation();
+  const router = useRouter();
   const { ticketId } = useParams({ strict: false });
   const id = Number.parseInt(ticketId ?? '0', 10);
   const { data: user } = useMe();
+  const { toasts, removeToast, showSuccess, showError } = useToast();
   const ticketQuery = useTicket(id);
   const updateTicket = useUpdateTicket(id);
   const deleteTicket = useDeleteTicket();
@@ -36,6 +45,9 @@ export default function TicketDetailPage() {
   const attachTag = useAttachTag(id);
   const detachTag = useDetachTag(id);
   const [newTagName, setNewTagName] = useState('');
+  const [commentFile, setCommentFile] = useState<File | null>(null);
+  const [attachmentUploadClear, setAttachmentUploadClear] = useState(0);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const isAdmin = user?.role.code === 'admin';
   const schema = isAdmin ? ticketAdminUpdateSchema : ticketCustomerUpdateSchema;
@@ -76,29 +88,78 @@ export default function TicketDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-semibold">{ticket.title}</h1>
+        <div>
+          <h1 className="text-2xl font-semibold">{ticket.title}</h1>
+          <p className="text-xs text-slate-500 mt-1">
+            {t('app.createdAt', { date: new Date(ticket.created_at).toLocaleString() })}
+          </p>
+        </div>
         {isAdmin ? (
-          <Button
-            variant="danger"
-            onClick={() => {
-              deleteTicket.mutate(id, {
-                onSuccess: () => {
-                  window.location.href = '/tickets';
-                },
-              });
-            }}
-          >
+          <Button variant="danger" onClick={() => setShowDeleteConfirm(true)}>
             {t('app.delete')}
           </Button>
         ) : null}
       </div>
+
+      <section className="rounded-lg border border-helpdesk-border bg-white p-4">
+        <h2 className="font-semibold">{t('app.attachments')}</h2>
+        {(attachmentsQuery.data?.length ?? 0) === 0 ? (
+          <p className="mt-2 text-sm text-slate-500">{t('attachments.empty')}</p>
+        ) : (
+          <ul className="mt-2 space-y-2 text-sm">
+            {(attachmentsQuery.data ?? []).map((file) => (
+              <AttachmentRow
+                key={file.id}
+                file={file}
+                deleteLabel={t('app.delete')}
+                canDelete={Boolean(user && (file.uploaded_by?.id === user.id || isAdmin))}
+                onDelete={() => {
+                  deleteAttachment.mutate(file.id, {
+                    onSuccess: () => {
+                      showSuccess(t('app.attachmentDeleted'));
+                    },
+                    onError: () => {
+                      showError(t('app.error'));
+                    },
+                  });
+                }}
+              />
+            ))}
+          </ul>
+        )}
+        <FilePickButton
+          className="mt-3"
+          label={t('attachments.addFile')}
+          clearSignal={attachmentUploadClear}
+          onFileSelected={(files) => {
+            const file = files[0];
+            if (!file) return;
+            uploadAttachment.mutate(file, {
+              onSuccess: () => {
+                showSuccess(t('app.attachmentUploaded'));
+                setAttachmentUploadClear((value) => value + 1);
+              },
+              onError: () => {
+                showError(t('app.error'));
+              },
+            });
+          }}
+        />
+      </section>
 
       <FormProvider {...form}>
         <form
           className="space-y-3 rounded-lg border border-helpdesk-border bg-white p-4"
           onSubmit={(event) => {
             void form.handleSubmit((values) => {
-              updateTicket.mutate(values);
+              updateTicket.mutate(values, {
+                onSuccess: () => {
+                  showSuccess(t('app.ticketUpdated'));
+                },
+                onError: () => {
+                  showError(t('app.error'));
+                },
+              });
             })(event);
           }}
         >
@@ -115,7 +176,7 @@ export default function TicketDetailPage() {
             <>
               <label className="block text-sm font-medium">
                 Status
-                <select className="mt-1 w-full rounded-md border px-3 py-2 text-sm" {...form.register('status')}>
+                <select className={cn(selectFieldClass, 'mt-1 w-full')} {...form.register('status')}>
                   {(['open', 'in_progress', 'pending', 'resolved', 'closed'] as const).map((code) => (
                     <option key={code} value={code}>
                       {code}
@@ -125,7 +186,7 @@ export default function TicketDetailPage() {
               </label>
               <label className="block text-sm font-medium">
                 Priority
-                <select className="mt-1 w-full rounded-md border px-3 py-2 text-sm" {...form.register('priority')}>
+                <select className={cn(selectFieldClass, 'mt-1 w-full')} {...form.register('priority')}>
                   {(['low', 'medium', 'high', 'urgent'] as const).map((code) => (
                     <option key={code} value={code}>
                       {code}
@@ -159,7 +220,14 @@ export default function TicketDetailPage() {
                   aria-label={t('tags.remove', { name: tag.name })}
                   className="text-blue-400 hover:text-blue-700"
                   onClick={() => {
-                    detachTag.mutate(tag.id);
+                    detachTag.mutate(tag.id, {
+                      onSuccess: () => {
+                        showSuccess(t('app.tagRemoved'));
+                      },
+                      onError: () => {
+                        showError(t('app.error'));
+                      },
+                    });
                   }}
                 >
                   ×
@@ -179,6 +247,10 @@ export default function TicketDetailPage() {
               attachTag.mutate(name, {
                 onSuccess: () => {
                   setNewTagName('');
+                  showSuccess(t('app.tagAdded'));
+                },
+                onError: () => {
+                  showError(t('app.error'));
                 },
               });
             }}
@@ -215,12 +287,28 @@ export default function TicketDetailPage() {
           {(commentsQuery.data ?? []).map((comment) => (
             <li key={comment.id} className="rounded bg-slate-50 p-2 text-sm">
               <p>{comment.body}</p>
-              <p className="text-xs text-slate-500">{comment.author.email}</p>
+              {(comment.attachments?.length ?? 0) > 0 ? (
+                <ul className="mt-2 space-y-2">
+                  {comment.attachments?.map((file) => (
+                    <AttachmentRow key={file.id} file={file} deleteLabel={t('app.delete')} canDelete={false} compact />
+                  ))}
+                </ul>
+              ) : null}
+              <p className="mt-1 text-xs text-slate-500">{comment.author.email}</p>
               {user && (user.id === comment.author.id || isAdmin) ? (
                 <Button
                   variant="secondary"
                   className="mt-1"
-                  onClick={() => deleteComment.mutate(comment.id)}
+                  onClick={() => {
+                    deleteComment.mutate(comment.id, {
+                      onSuccess: () => {
+                        showSuccess(t('app.commentDeleted'));
+                      },
+                      onError: () => {
+                        showError(t('app.error'));
+                      },
+                    });
+                  }}
                 >
                   {t('app.delete')}
                 </Button>
@@ -229,47 +317,67 @@ export default function TicketDetailPage() {
           ))}
         </ul>
         <form
-          className="mt-3 flex gap-2"
+          className="mt-3 space-y-2"
           onSubmit={(event) => {
             void commentForm.handleSubmit((values) => {
-              createComment.mutate(values.body, {
-                onSuccess: () => commentForm.reset(),
-              });
+              createComment.mutate(
+                { body: values.body, file: commentFile ?? undefined },
+                {
+                  onSuccess: () => {
+                    commentForm.reset();
+                    setCommentFile(null);
+                    showSuccess(t('app.commentCreated'));
+                  },
+                  onError: () => {
+                    showError(t('app.error'));
+                  },
+                },
+              );
             })(event);
           }}
         >
           <input
-            className="flex-1 rounded-md border border-helpdesk-border px-3 py-2 text-sm"
-            placeholder="Comment…"
+            className="w-full rounded-md border border-helpdesk-border px-3 py-2 text-sm"
+            placeholder={t('comments.placeholder')}
             {...commentForm.register('body')}
+          />
+          <FilePickButton
+            label={t('attachments.addFile')}
+            selectedFileName={commentFile?.name}
+            onFileSelected={(files) => {
+              setCommentFile(files[0] ?? null);
+            }}
           />
           <Button type="submit">{t('app.create')}</Button>
         </form>
       </section>
 
-      <section className="rounded-lg border border-helpdesk-border bg-white p-4">
-        <h2 className="font-semibold">{t('app.attachments')}</h2>
-        <ul className="mt-2 space-y-1 text-sm">
-          {(attachmentsQuery.data ?? []).map((file) => (
-            <li key={file.id} className="flex items-center justify-between gap-2">
-              <a href={file.url} target="_blank" rel="noreferrer" className="text-helpdesk-primary hover:underline">
-                {file.filename}
-              </a>
-              <Button variant="secondary" onClick={() => deleteAttachment.mutate(file.id)}>
-                {t('app.delete')}
-              </Button>
-            </li>
-          ))}
-        </ul>
-        <input
-          type="file"
-          className="mt-3 text-sm"
-          onChange={(event) => {
-            const file = event.target.files?.[0];
-            if (file) uploadAttachment.mutate(file);
-          }}
-        />
-      </section>
+      <ConfirmationModal
+        open={showDeleteConfirm}
+        title={t('app.deleteTicketTitle')}
+        message={t('app.deleteTicketMessage')}
+        confirmText={t('app.delete')}
+        cancelText={t('app.cancel')}
+        isDangerous
+        isLoading={deleteTicket.isPending}
+        onConfirm={() => {
+          deleteTicket.mutate(id, {
+            onSuccess: () => {
+              setShowDeleteConfirm(false);
+              showSuccess(t('app.ticketDeleted'));
+              setTimeout(() => {
+                void router.navigate({ to: '/tickets' });
+              }, 4000);
+            },
+            onError: () => {
+              setShowDeleteConfirm(false);
+              showError(t('app.error'));
+            },
+          });
+        }}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
+      <ToastContainer toasts={toasts} onClose={removeToast} />
     </div>
   );
 }

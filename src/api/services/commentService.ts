@@ -8,7 +8,18 @@ export const commentService = {
     });
   },
 
-  create(ticketId: number, body: string, locale?: string) {
+  create(ticketId: number, body: string, locale?: string, file?: File) {
+    if (file) {
+      const form = new FormData();
+      form.append('comment[body]', body);
+      form.append('comment[file]', file);
+      return apiRequest<{ comment: Comment }>(`/tickets/${String(ticketId)}/comments`, {
+        method: 'POST',
+        body: form,
+        locale,
+      });
+    }
+
     return apiRequest<{ comment: Comment }>(`/tickets/${String(ticketId)}/comments`, {
       method: 'POST',
       body: JSON.stringify({ comment: { body } }),

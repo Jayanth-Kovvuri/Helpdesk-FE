@@ -18,13 +18,40 @@
     "attachments": "Attachments",
     "newTicket": "New ticket",
     "backendHealth": "API health",
-    "exportData": "Export my data",
     "deleteAccount": "Delete account",
     "localeEn": "English",
     "localeEs": "Español",
     "localeAr": "العربية",
     "collapseSidebar": "Collapse sidebar",
-    "expandSidebar": "Expand sidebar"
+    "expandSidebar": "Expand sidebar",
+    "actions": "Actions",
+    "showing": "Showing",
+    "of": "of",
+    "previous": "Previous",
+    "next": "Next",
+    "createdAt": "Created on {{date}}",
+    "ticketUpdated": "Ticket updated successfully",
+    "ticketDeleted": "Ticket deleted successfully",
+    "commentCreated": "Comment added successfully",
+    "commentDeleted": "Comment deleted successfully",
+    "tagAdded": "Tag added successfully",
+    "tagRemoved": "Tag removed successfully",
+    "attachmentUploaded": "File uploaded successfully",
+    "attachmentDeleted": "File deleted successfully",
+    "deleteTicketTitle": "Delete ticket?",
+    "deleteTicketMessage": "This action cannot be undone. Are you sure you want to delete this ticket?",
+    "assignTo": "Assign to (optional)",
+    "searchAssignee": "Search by name or email…",
+    "assignedTo": "Assigned to",
+    "clearAssignee": "Clear assignment"
+  },
+  "attachments": {
+    "empty": "No files attached yet.",
+    "addFile": "Add file",
+    "attachWithComment": "Attach a file (optional)"
+  },
+  "comments": {
+    "placeholder": "Write a comment…"
   },
   "login": {
     "email": "Email",
@@ -37,6 +64,7 @@
     "createTitle": "Create account",
     "createHint": "Only admins can create accounts. Share the password with the user so they can log in and change it.",
     "email": "Email",
+    "name": "Full name",
     "password": "Temporary password",
     "role": "Role",
     "roleCustomer": "Customer",
@@ -44,10 +72,14 @@
     "create": "Create account",
     "createSuccess": "Account created.",
     "listTitle": "Existing users",
+    "status": "Status",
     "statusActive": "Active",
     "statusDisabled": "Disabled",
     "disable": "Disable",
-    "enable": "Enable"
+    "enable": "Enable",
+    "currentUser": "You",
+    "noUsers": "No users found.",
+    "noSearchResults": "No users match your search."
   },
   "account": {
     "changePassword": "Change password",
@@ -67,6 +99,7 @@
   "tickets": {
     "empty": "No tickets yet.",
     "searchPlaceholder": "Search by title, description, status, or priority…",
+    "searchByTitlePlaceholder": "Search by title…",
     "searchInTable": "Search",
     "noSearchResults": "No tickets match this search in this section.",
     "status": "Status",
@@ -94,10 +127,27 @@
     "ok": "On track",
     "noBreached": "No tickets have breached their SLA.",
     "noAtRisk": "No tickets are at risk right now.",
-    "due": "Due {{date}}"
+    "noOk": "No tickets are on track right now.",
+    "due": "Due {{date}}",
+    "infoAriaLabel": "How SLA status is calculated",
+    "infoTitle": "How SLA status is calculated",
+    "infoIntro": "Age is measured in whole days from the ticket created time until now. Only open, in progress, and pending tickets are included on this dashboard (resolved and closed tickets are excluded).",
+    "infoOnTrack": "On track — age is at most the at-risk threshold for that priority.",
+    "infoAtRisk": "At risk — age is past the at-risk threshold but not past the SLA deadline.",
+    "infoBreached": "Breached — age is past the SLA deadline for that priority.",
+    "infoDue": "Due date shown on each ticket is created date plus the SLA deadline (days) for its priority.",
+    "infoPriority": "Priority",
+    "infoOnTrackWindow": "On track",
+    "infoAtRiskWindow": "At risk",
+    "infoBreachedAfter": "Breached",
+    "infoDaysOrLess": "≤ {{days}} days",
+    "infoDaysRange": "> {{from}} and ≤ {{to}} days",
+    "infoDaysOver": "> {{days}} days",
+    "infoNote": "Reminders may be emailed before the due date; this dashboard uses the same rules as the API."
   },
   "allTickets": {
     "title": "All tickets",
+    "sidebarLabel": "Manage tickets",
     "search": "Search",
     "searchPlaceholder": "Search by title or description…",
     "allStatuses": "All statuses",
@@ -116,6 +166,13 @@
     "statusInProgress": "In progress",
     "statusPending": "Pending",
     "statusResolved": "Resolved",
-    "statusClosed": "Closed"
+    "statusClosed": "Closed",
+    "actions": "Actions",
+    "reassign": "Reassign",
+    "reassignTitle": "Reassign ticket",
+    "searchAssignee": "Search",
+    "searchAssigneePlaceholder": "Search by name or email…",
+    "noAdminsFound": "No matching admins. Assignees must be admin users (search by name or email).",
+    "searchForMoreAssignees": "Showing 4 admins. Search by name or email to find others."
   }
 }

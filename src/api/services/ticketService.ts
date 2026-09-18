@@ -10,16 +10,34 @@ export type TicketCreateInput = {
   customer_id?: number;
 };
 
-export type TicketUpdateInput = Partial<TicketCreateInput>;
+export type TicketUpdateInput = Partial<Omit<TicketCreateInput, 'assignee_id'>> & {
+  /** null clears the assignee — omitting the key (undefined) leaves it unchanged. */
+  assignee_id?: number | null;
+};
 
 export const ticketService = {
-  list(options?: { locale?: string; q?: string }) {
+  list(options?: { locale?: string; q?: string; filter?: string; status?: string; priority?: string }) {
     const locale = options?.locale;
     const q = options?.q?.trim();
-    const path =
-      q && q.length >= 2
-        ? `/tickets?${new URLSearchParams({ q }).toString()}`
-        : '/tickets';
+    const filter = options?.filter;
+    const status = options?.status;
+    const priority = options?.priority;
+
+    const params = new URLSearchParams();
+    if (q && q.length >= 2) {
+      params.append('q', q);
+    }
+    if (filter) {
+      params.append('filter', filter);
+    }
+    if (status) {
+      params.append('status', status);
+    }
+    if (priority) {
+      params.append('priority', priority);
+    }
+
+    const path = params.toString() ? `/tickets?${params.toString()}` : '/tickets';
     return apiRequest<{ tickets: Ticket[] }>(path, { locale });
   },
 
@@ -34,10 +52,12 @@ export const ticketService = {
     return apiRequest<{ ticket: Ticket }>(`/tickets/${String(id)}`, { locale });
   },
 
-  create(input: TicketCreateInput, locale?: string) {
+  create(input: TicketCreateInput | FormData, locale?: string) {
+    const body = input instanceof FormData ? input : JSON.stringify({ ticket: input });
+
     return apiRequest<{ ticket: Ticket }>('/tickets', {
       method: 'POST',
-      body: JSON.stringify({ ticket: input }),
+      body,
       locale,
     });
   },

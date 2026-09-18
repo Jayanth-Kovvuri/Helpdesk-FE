@@ -6,7 +6,11 @@ import { useAdminTickets, useAdminUpdateTicket } from '@/api/hooks/useAdminTicke
 import { useMe } from '@/api/hooks/useAuth';
 import { useUsersList } from '@/api/hooks/useUsers';
 import { SearchInput } from '@/components/SearchInput';
+import { ReassignTicketModal } from '@/components/tickets/ReassignTicketModal';
 import { Button } from '@/components/ui/Button';
+import { PriorityPill } from '@/components/ui/PriorityPill';
+import { cn } from '@/lib/cn';
+import { selectFieldClass } from '@/lib/selectFieldClass';
 import type { Ticket } from '@/types/api';
 
 const STATUSES = ['open', 'in_progress', 'pending', 'resolved', 'closed'] as const;
@@ -38,6 +42,7 @@ export default function AllTicketsPage() {
   const [assigneeId, setAssigneeId] = useState('');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [reassignTicket, setReassignTicket] = useState<Ticket | null>(null);
 
   const filters = { status, priority, assignee_id: assigneeId, q: search, page, per_page: PER_PAGE };
   const ticketsQuery = useAdminTickets(filters, isAdmin);
@@ -70,7 +75,7 @@ export default function AllTicketsPage() {
         <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-700">
           {t('tickets.status')}
           <select
-            className="w-40 rounded-md border border-helpdesk-border px-2 py-2 text-sm"
+            className={cn(selectFieldClass, 'w-40')}
             value={status}
             onChange={(event) => {
               setStatus(event.target.value);
@@ -89,7 +94,7 @@ export default function AllTicketsPage() {
         <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-700">
           {t('tickets.priority')}
           <select
-            className="w-40 rounded-md border border-helpdesk-border px-2 py-2 text-sm"
+            className={cn(selectFieldClass, 'w-40')}
             value={priority}
             onChange={(event) => {
               setPriority(event.target.value);
@@ -108,7 +113,7 @@ export default function AllTicketsPage() {
         <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-700">
           {t('allTickets.assignee')}
           <select
-            className="w-48 rounded-md border border-helpdesk-border px-2 py-2 text-sm"
+            className={cn(selectFieldClass, 'w-48')}
             value={assigneeId}
             onChange={(event) => {
               setAssigneeId(event.target.value);
@@ -142,7 +147,8 @@ export default function AllTicketsPage() {
                   <th className="w-40 px-3 py-2 font-medium text-slate-600">{t('allTickets.customer')}</th>
                   <th className="w-40 px-3 py-2 font-medium text-slate-600">{t('tickets.status')}</th>
                   <th className="w-32 px-3 py-2 font-medium text-slate-600">{t('tickets.priority')}</th>
-                  <th className="w-48 px-3 py-2 font-medium text-slate-600">{t('allTickets.assignee')}</th>
+                  <th className="w-40 px-3 py-2 font-medium text-slate-600">{t('allTickets.assignee')}</th>
+                  <th className="w-32 px-3 py-2 font-medium text-slate-600">{t('allTickets.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -160,7 +166,7 @@ export default function AllTicketsPage() {
                     <td className="px-3 py-2 text-slate-600">{ticket.customer.email}</td>
                     <td className="px-3 py-2">
                       <select
-                        className="w-full rounded-md border border-helpdesk-border px-2 py-1 text-sm"
+                        className={cn(selectFieldClass, 'w-full py-1')}
                         value={ticket.status.code}
                         disabled={updateTicket.isPending}
                         onChange={(event) => {
@@ -174,33 +180,26 @@ export default function AllTicketsPage() {
                         ))}
                       </select>
                     </td>
-                    <td className="px-3 py-2 text-slate-600">{ticket.priority.label}</td>
                     <td className="px-3 py-2">
-                      <select
-                        className="w-full rounded-md border border-helpdesk-border px-2 py-1 text-sm"
-                        value={ticket.assignee?.id ?? ''}
-                        disabled={updateTicket.isPending}
-                        onChange={(event) => {
-                          const value = event.target.value;
-                          updateTicket.mutate({
-                            id: ticket.id,
-                            input: { assignee_id: value ? Number(value) : undefined },
-                          });
+                      <PriorityPill priority={ticket.priority} />
+                    </td>
+                    <td className="px-3 py-2 text-slate-600">
+                      {ticket.assignee ? ticket.assignee.email : t('allTickets.unassigned')}
+                    </td>
+                    <td className="px-3 py-2">
+                      <Button
+                        onClick={() => {
+                          setReassignTicket(ticket);
                         }}
                       >
-                        <option value="">{t('allTickets.unassigned')}</option>
-                        {admins.map((admin) => (
-                          <option key={admin.id} value={admin.id}>
-                            {admin.email}
-                          </option>
-                        ))}
-                      </select>
+                        {t('allTickets.reassign')}
+                      </Button>
                     </td>
                   </tr>
                 ))}
                 {ticketsQuery.data.tickets.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-3 py-6 text-center text-sm text-slate-500">
+                    <td colSpan={6} className="px-3 py-6 text-center text-sm text-slate-500">
                       {t('allTickets.empty')}
                     </td>
                   </tr>
@@ -241,6 +240,14 @@ export default function AllTicketsPage() {
           </div>
         </>
       )}
+
+      <ReassignTicketModal
+        ticket={reassignTicket}
+        admins={admins}
+        onClose={() => {
+          setReassignTicket(null);
+        }}
+      />
     </div>
   );
 }

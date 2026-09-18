@@ -2,10 +2,6 @@ import { apiRequest } from '@/api/client';
 import type { User } from '@/types/api';
 
 export const meService = {
-  exportData(locale?: string) {
-    return apiRequest<{ export: unknown }>('/me/export', { locale });
-  },
-
   updatePassword(currentPassword: string, newPassword: string) {
     return apiRequest<{ user: User }>('/me', {
       method: 'PATCH',

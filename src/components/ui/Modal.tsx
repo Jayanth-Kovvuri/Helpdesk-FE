@@ -1,4 +1,5 @@
 import { useEffect, useId, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 
 import { cn } from '@/lib/cn';
 
@@ -31,22 +32,19 @@ export function Modal({ open, title, onClose, children, className }: ModalProps)
 
   if (!open) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <button
-        type="button"
-        className="absolute inset-0 bg-slate-900/50"
-        aria-label="Close dialog"
-        onClick={onClose}
-      />
+  const modalContent = (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/50" onClick={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         className={cn(
-          'relative z-10 w-full max-w-lg rounded-lg border border-helpdesk-border bg-white p-5 shadow-xl',
+          'relative w-full max-w-lg rounded-lg border border-helpdesk-border bg-white p-5 shadow-xl',
           className,
         )}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
       >
         <div className="mb-4 flex items-start justify-between gap-3">
           <h2 id={titleId} className="text-lg font-semibold text-slate-900">
@@ -65,4 +63,6 @@ export function Modal({ open, title, onClose, children, className }: ModalProps)
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }

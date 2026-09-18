@@ -16,6 +16,7 @@ export type SlaDashboard = {
   };
   breached_tickets: SlaTicketSummary[];
   at_risk_tickets: SlaTicketSummary[];
+  ok_tickets: SlaTicketSummary[];
 };
 
 export const slaService = {

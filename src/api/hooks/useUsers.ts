@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { queryKeys } from '@/api/queryKeys';
 import { userService } from '@/api/services/userService';
@@ -34,5 +34,25 @@ export function useSetUserDisabled() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.users });
     },
+  });
+}
+
+type UserSearchOptions = {
+  role?: 'admin' | 'customer';
+  excludeDisabled?: boolean;
+};
+
+export function useUserSearch(query: string, options?: UserSearchOptions) {
+  const trimmed = query.trim();
+  const enabled = trimmed.length >= 2;
+
+  return useQuery({
+    queryKey: ['users', 'search', trimmed, options?.role, options?.excludeDisabled],
+    queryFn: async () => {
+      const data = await userService.search(trimmed, options);
+      return data.users;
+    },
+    enabled,
+    placeholderData: keepPreviousData,
   });
 }

@@ -18,13 +18,40 @@
     "attachments": "المرفقات",
     "newTicket": "تذكرة جديدة",
     "backendHealth": "حالة واجهة برمجة التطبيقات",
-    "exportData": "تصدير بياناتي",
     "deleteAccount": "حذف الحساب",
     "localeEn": "English",
     "localeEs": "Español",
     "localeAr": "العربية",
     "collapseSidebar": "طي الشريط الجانبي",
-    "expandSidebar": "توسيع الشريط الجانبي"
+    "expandSidebar": "توسيع الشريط الجانبي",
+    "actions": "الإجراءات",
+    "showing": "عرض",
+    "of": "من",
+    "previous": "السابق",
+    "next": "التالي",
+    "createdAt": "تم الإنشاء في {{date}}",
+    "ticketUpdated": "تم تحديث التذكرة بنجاح",
+    "ticketDeleted": "تم حذف التذكرة بنجاح",
+    "commentCreated": "تم إضافة التعليق بنجاح",
+    "commentDeleted": "تم حذف التعليق بنجاح",
+    "tagAdded": "تمت إضافة الوسم بنجاح",
+    "tagRemoved": "تم إزالة الوسم بنجاح",
+    "attachmentUploaded": "تم تحميل الملف بنجاح",
+    "attachmentDeleted": "تم حذف الملف بنجاح",
+    "deleteTicketTitle": "حذف التذكرة؟",
+    "deleteTicketMessage": "لا يمكن التراجع عن هذا الإجراء. هل أنت متأكد من رغبتك في حذف هذه التذكرة؟",
+    "assignTo": "تعيين إلى (اختياري)",
+    "searchAssignee": "ابحث عن الاسم أو البريد الإلكتروني…",
+    "assignedTo": "مُعينة لـ",
+    "clearAssignee": "مسح التعيين"
+  },
+  "attachments": {
+    "empty": "لا توجد مرفقات بعد.",
+    "addFile": "إضافة ملف",
+    "attachWithComment": "إرفاق ملف (اختياري)"
+  },
+  "comments": {
+    "placeholder": "اكتب تعليقًا…"
   },
   "login": {
     "email": "البريد الإلكتروني",
@@ -37,6 +64,7 @@
     "createTitle": "إنشاء حساب",
     "createHint": "يمكن للمسؤولين فقط إنشاء حسابات. شارك كلمة المرور مع المستخدم لتسجيل الدخول وتغييرها.",
     "email": "البريد الإلكتروني",
+    "name": "الاسم الكامل",
     "password": "كلمة مرور مؤقتة",
     "role": "الدور",
     "roleCustomer": "عميل",
@@ -44,10 +72,14 @@
     "create": "إنشاء حساب",
     "createSuccess": "تم إنشاء الحساب.",
     "listTitle": "المستخدمون الحاليون",
+    "status": "الحالة",
     "statusActive": "نشط",
     "statusDisabled": "معطّل",
     "disable": "تعطيل",
-    "enable": "تفعيل"
+    "enable": "تفعيل",
+    "currentUser": "أنت",
+    "noUsers": "لم يتم العثور على مستخدمين.",
+    "noSearchResults": "لا يوجد مستخدمون يطابقون بحثك."
   },
   "account": {
     "changePassword": "تغيير كلمة المرور",
@@ -67,6 +99,7 @@
   "tickets": {
     "empty": "لا توجد تذاكر حتى الآن.",
     "searchPlaceholder": "البحث بالعنوان أو الوصف أو الحالة أو الأولوية…",
+    "searchByTitlePlaceholder": "البحث بالعنوان…",
     "searchInTable": "بحث",
     "noSearchResults": "لا توجد تذاكر مطابقة لهذا البحث في هذا القسم.",
     "status": "الحالة",
@@ -94,10 +127,27 @@
     "ok": "على المسار الصحيح",
     "noBreached": "لا توجد تذاكر تجاوزت اتفاقية مستوى الخدمة.",
     "noAtRisk": "لا توجد تذاكر في خطر حالياً.",
-    "due": "الموعد {{date}}"
+    "noOk": "لا توجد تذاكر على المسار حالياً.",
+    "due": "الموعد {{date}}",
+    "infoAriaLabel": "كيف يُحسب وضع اتفاقية مستوى الخدمة",
+    "infoTitle": "كيف يُحسب وضع اتفاقية مستوى الخدمة",
+    "infoIntro": "يُقاس عمر التذكرة بالأيام من وقت الإنشاء حتى الآن. تُعرض فقط التذاكر المفتوحة وقيد التنفيذ والمعلّقة (المحلولة والمغلقة مستبعدة).",
+    "infoOnTrack": "على المسار — العمر لا يتجاوز حد الخطر لتلك الأولوية.",
+    "infoAtRisk": "في خطر — تجاوز حد الخطر ولم يتجاوز موعد اتفاقية مستوى الخدمة.",
+    "infoBreached": "متجاوزة — تجاوز موعد اتفاقية مستوى الخدمة لتلك الأولوية.",
+    "infoDue": "موعد الاستحقاق = تاريخ الإنشاء + أيام اتفاقية مستوى الخدمة للأولوية.",
+    "infoPriority": "الأولوية",
+    "infoOnTrackWindow": "على المسار",
+    "infoAtRiskWindow": "في خطر",
+    "infoBreachedAfter": "متجاوزة",
+    "infoDaysOrLess": "≤ {{days}} أيام",
+    "infoDaysRange": "> {{from}} و ≤ {{to}} أيام",
+    "infoDaysOver": "> {{days}} أيام",
+    "infoNote": "تستخدم رسائل التذكير نفس القواعد المعروضة هنا."
   },
   "allTickets": {
     "title": "جميع التذاكر",
+    "sidebarLabel": "إدارة التذاكر",
     "search": "بحث",
     "searchPlaceholder": "البحث بالعنوان أو الوصف…",
     "allStatuses": "جميع الحالات",
@@ -116,6 +166,13 @@
     "statusInProgress": "قيد التنفيذ",
     "statusPending": "معلّقة",
     "statusResolved": "محلولة",
-    "statusClosed": "مغلقة"
+    "statusClosed": "مغلقة",
+    "actions": "الإجراءات",
+    "reassign": "إعادة تعيين",
+    "reassignTitle": "إعادة تعيين التذكرة",
+    "searchAssignee": "بحث",
+    "searchAssigneePlaceholder": "البحث بالاسم أو البريد الإلكتروني…",
+    "noAdminsFound": "لا يوجد مسؤولون مطابقون.",
+    "searchForMoreAssignees": "عرض 4 مسؤولين. ابحث بالاسم أو البريد الإلكتروني للعثور على المزيد."
   }
 }

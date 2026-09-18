@@ -35,7 +35,7 @@ export function useLogin() {
       sessionService.login(email, password, locale),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.me });
-      void queryClient.invalidateQueries({ queryKey: queryKeys.tickets.all });
+      void queryClient.removeQueries({ queryKey: queryKeys.tickets.all });
     },
   });
 }

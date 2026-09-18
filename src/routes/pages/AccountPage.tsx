@@ -1,12 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
-import { queryKeys } from '@/api/queryKeys';
 import { useMe, useUpdatePassword } from '@/api/hooks/useAuth';
-import { healthService } from '@/api/services/healthService';
 import { meService } from '@/api/services/meService';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -39,24 +37,6 @@ export default function AccountPage() {
     defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
   });
 
-  const healthQuery = useQuery({
-    queryKey: queryKeys.health,
-    queryFn: () => healthService.check(),
-  });
-
-  const exportMutation = useMutation({
-    mutationFn: () => meService.exportData(),
-    onSuccess: (data) => {
-      const blob = new Blob([JSON.stringify(data.export, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement('a');
-      anchor.href = url;
-      anchor.download = 'helpdesk-export.json';
-      anchor.click();
-      URL.revokeObjectURL(url);
-    },
-  });
-
   const deleteMutation = useMutation({
     mutationFn: () => meService.deleteAccount(),
     onSuccess: () => {
@@ -72,17 +52,6 @@ export default function AccountPage() {
           {user.email} · {user.role.label}
         </p>
       ) : null}
-
-      <section className="rounded-lg border border-helpdesk-border bg-white p-4 text-sm">
-        <h2 className="font-semibold">{t('app.backendHealth')}</h2>
-        {healthQuery.isLoading ? (
-          <p>{t('app.loading')}</p>
-        ) : (
-          <pre className="mt-2 overflow-auto rounded bg-slate-50 p-2 text-xs">
-            {JSON.stringify(healthQuery.data, null, 2)}
-          </pre>
-        )}
-      </section>
 
       <section className="rounded-lg border border-helpdesk-border bg-white p-4 text-sm">
         <h2 className="font-semibold">{t('account.changePassword')}</h2>
@@ -134,15 +103,9 @@ export default function AccountPage() {
         </form>
       </section>
 
-      <div className="flex gap-3">
-        <Button variant="secondary" onClick={() => exportMutation.mutate()}>
-          {t('app.exportData')}
-        </Button>
-
-        <Button variant="danger" onClick={() => deleteMutation.mutate()}>
-          {t('app.deleteAccount')}
-        </Button>
-      </div>
+      <Button variant="danger" onClick={() => deleteMutation.mutate()}>
+        {t('app.deleteAccount')}
+      </Button>
     </div>
   );
 }

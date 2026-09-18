@@ -1,8 +1,11 @@
 import { Link } from '@tanstack/react-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useMe } from '@/api/hooks/useAuth';
 import { useSlaDashboard } from '@/api/hooks/useSlaDashboard';
+import { SlaLogicModal } from '@/components/sla/SlaLogicModal';
+import { PriorityPill } from '@/components/ui/PriorityPill';
 import type { SlaTicketSummary } from '@/api/services/slaService';
 
 function CountTile({ label, count, tone }: { label: string; count: number; tone: 'red' | 'amber' | 'green' }) {
@@ -31,12 +34,16 @@ function TicketList({ tickets, emptyLabel }: { tickets: SlaTicketSummary[]; empt
     <ul className="mt-2 divide-y divide-helpdesk-border text-sm">
       {tickets.map((ticket) => (
         <li key={ticket.id} className="flex items-center justify-between gap-3 py-2">
-          <Link to="/tickets/$ticketId" params={{ ticketId: String(ticket.id) }} className="hover:underline">
+          <Link
+            to="/tickets/$ticketId"
+            params={{ ticketId: String(ticket.id) }}
+            className="text-slate-800 hover:text-helpdesk-primary hover:underline"
+          >
             {ticket.title}
           </Link>
-          <span className="flex items-center gap-2 text-xs text-slate-500">
-            <span>{ticket.priority.label}</span>
-            <span>{t('sla.due', { date: new Date(ticket.due_at).toLocaleString() })}</span>
+          <span className="flex shrink-0 items-center gap-2 text-xs text-slate-500">
+            <PriorityPill priority={ticket.priority} />
+            <span className="whitespace-nowrap">{t('sla.due', { date: new Date(ticket.due_at).toLocaleString() })}</span>
           </span>
         </li>
       ))}
@@ -48,6 +55,7 @@ export default function SlaDashboardPage() {
   const { t } = useTranslation();
   const { data: currentUser } = useMe();
   const isAdmin = currentUser?.role.code === 'admin';
+  const [infoOpen, setInfoOpen] = useState(false);
 
   const dashboardQuery = useSlaDashboard(isAdmin);
 
@@ -56,11 +64,29 @@ export default function SlaDashboardPage() {
     return <p role="alert">{dashboardQuery.error?.message ?? t('app.error')}</p>;
   }
 
-  const { counts, breached_tickets: breachedTickets, at_risk_tickets: atRiskTickets } = dashboardQuery.data;
+  const {
+    counts,
+    breached_tickets: breachedTickets,
+    at_risk_tickets: atRiskTickets,
+    ok_tickets: okTickets,
+  } = dashboardQuery.data;
 
   return (
     <div className="max-w-3xl space-y-6">
-      <h1 className="text-2xl font-semibold">{t('sla.title')}</h1>
+      <div className="flex items-center gap-2">
+        <h1 className="text-2xl font-semibold">{t('sla.title')}</h1>
+        <button
+          type="button"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-helpdesk-primary bg-white text-sm font-semibold italic text-helpdesk-primary hover:bg-blue-50"
+          aria-label={t('sla.infoAriaLabel')}
+          title={t('sla.infoAriaLabel')}
+          onClick={() => setInfoOpen(true)}
+        >
+          i
+        </button>
+      </div>
+
+      <SlaLogicModal open={infoOpen} onClose={() => setInfoOpen(false)} />
 
       <div className="grid grid-cols-3 gap-3">
         <CountTile label={t('sla.breached')} count={counts.breached} tone="red" />
@@ -76,6 +102,11 @@ export default function SlaDashboardPage() {
       <section className="rounded-lg border border-helpdesk-border bg-white p-4">
         <h2 className="font-semibold text-amber-700">{t('sla.atRisk')}</h2>
         <TicketList tickets={atRiskTickets} emptyLabel={t('sla.noAtRisk')} />
+      </section>
+
+      <section className="rounded-lg border border-helpdesk-border bg-white p-4">
+        <h2 className="font-semibold text-green-700">{t('sla.ok')}</h2>
+        <TicketList tickets={okTickets} emptyLabel={t('sla.noOk')} />
       </section>
     </div>
   );

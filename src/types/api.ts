@@ -6,6 +6,7 @@ export type LabeledCode<T extends string> = {
 export type User = {
   id: number;
   email: string;
+  name: string;
   role: LabeledCode<'customer' | 'admin'>;
   disabled: boolean;
 };
@@ -42,6 +43,7 @@ export type Comment = {
   created_at: string;
   updated_at: string;
   author: User;
+  attachments?: Attachment[];
 };
 
 export type Attachment = {

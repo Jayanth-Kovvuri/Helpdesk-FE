@@ -18,13 +18,40 @@
     "attachments": "Adjuntos",
     "newTicket": "Nuevo ticket",
     "backendHealth": "Estado de la API",
-    "exportData": "Exportar mis datos",
     "deleteAccount": "Eliminar cuenta",
     "localeEn": "English",
     "localeEs": "Español",
     "localeAr": "العربية",
     "collapseSidebar": "Contraer barra lateral",
-    "expandSidebar": "Expandir barra lateral"
+    "expandSidebar": "Expandir barra lateral",
+    "actions": "Acciones",
+    "showing": "Mostrando",
+    "of": "de",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "createdAt": "Creado en {{date}}",
+    "ticketUpdated": "Ticket actualizado exitosamente",
+    "ticketDeleted": "Ticket eliminado exitosamente",
+    "commentCreated": "Comentario agregado exitosamente",
+    "commentDeleted": "Comentario eliminado exitosamente",
+    "tagAdded": "Etiqueta agregada exitosamente",
+    "tagRemoved": "Etiqueta eliminada exitosamente",
+    "attachmentUploaded": "Archivo subido exitosamente",
+    "attachmentDeleted": "Archivo eliminado exitosamente",
+    "deleteTicketTitle": "¿Eliminar ticket?",
+    "deleteTicketMessage": "Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminar este ticket?",
+    "assignTo": "Asignar a (opcional)",
+    "searchAssignee": "Buscar por nombre o correo…",
+    "assignedTo": "Asignado a",
+    "clearAssignee": "Limpiar asignación"
+  },
+  "attachments": {
+    "empty": "Aún no hay archivos adjuntos.",
+    "addFile": "Añadir archivo",
+    "attachWithComment": "Adjuntar archivo (opcional)"
+  },
+  "comments": {
+    "placeholder": "Escribe un comentario…"
   },
   "login": {
     "email": "Correo",
@@ -37,6 +64,7 @@
     "createTitle": "Crear cuenta",
     "createHint": "Solo los administradores pueden crear cuentas. Comparta la contraseña con el usuario para que inicie sesión y la cambie.",
     "email": "Correo",
+    "name": "Nombre completo",
     "password": "Contraseña temporal",
     "role": "Rol",
     "roleCustomer": "Cliente",
@@ -44,10 +72,14 @@
     "create": "Crear cuenta",
     "createSuccess": "Cuenta creada.",
     "listTitle": "Usuarios existentes",
+    "status": "Estado",
     "statusActive": "Activo",
     "statusDisabled": "Deshabilitado",
     "disable": "Deshabilitar",
-    "enable": "Habilitar"
+    "enable": "Habilitar",
+    "currentUser": "Usted",
+    "noUsers": "No se encontraron usuarios.",
+    "noSearchResults": "Ningún usuario coincide con tu búsqueda."
   },
   "account": {
     "changePassword": "Cambiar contraseña",
@@ -67,6 +99,7 @@
   "tickets": {
     "empty": "Aún no hay tickets.",
     "searchPlaceholder": "Buscar por título, descripción, estado o prioridad…",
+    "searchByTitlePlaceholder": "Buscar por título…",
     "searchInTable": "Buscar",
     "noSearchResults": "Ningún ticket coincide con esta búsqueda en esta sección.",
     "status": "Estado",
@@ -94,10 +127,27 @@
     "ok": "En regla",
     "noBreached": "Ningún ticket ha incumplido su SLA.",
     "noAtRisk": "Ningún ticket está en riesgo actualmente.",
-    "due": "Vence {{date}}"
+    "noOk": "Ningún ticket está en regla actualmente.",
+    "due": "Vence {{date}}",
+    "infoAriaLabel": "Cómo se calcula el estado del SLA",
+    "infoTitle": "Cómo se calcula el estado del SLA",
+    "infoIntro": "La antigüedad se mide en días desde la creación del ticket hasta ahora. Solo se incluyen tickets abiertos, en progreso y pendientes (resueltos y cerrados quedan fuera).",
+    "infoOnTrack": "En regla — la antigüedad no supera el umbral de riesgo de esa prioridad.",
+    "infoAtRisk": "En riesgo — supera el umbral de riesgo pero no la fecha límite del SLA.",
+    "infoBreached": "Incumplido — supera la fecha límite del SLA de esa prioridad.",
+    "infoDue": "La fecha de vencimiento es la creación más los días de SLA de la prioridad.",
+    "infoPriority": "Prioridad",
+    "infoOnTrackWindow": "En regla",
+    "infoAtRiskWindow": "En riesgo",
+    "infoBreachedAfter": "Incumplido",
+    "infoDaysOrLess": "≤ {{days}} días",
+    "infoDaysRange": "> {{from}} y ≤ {{to}} días",
+    "infoDaysOver": "> {{days}} días",
+    "infoNote": "Los recordatorios por correo usan las mismas reglas que este panel."
   },
   "allTickets": {
     "title": "Todos los tickets",
+    "sidebarLabel": "Gestionar tickets",
     "search": "Buscar",
     "searchPlaceholder": "Buscar por título o descripción…",
     "allStatuses": "Todos los estados",
@@ -116,6 +166,13 @@
     "statusInProgress": "En progreso",
     "statusPending": "Pendiente",
     "statusResolved": "Resuelto",
-    "statusClosed": "Cerrado"
+    "statusClosed": "Cerrado",
+    "actions": "Acciones",
+    "reassign": "Reasignar",
+    "reassignTitle": "Reasignar ticket",
+    "searchAssignee": "Buscar",
+    "searchAssigneePlaceholder": "Buscar por nombre o correo…",
+    "noAdminsFound": "No hay administradores coincidentes.",
+    "searchForMoreAssignees": "Mostrando 4 administradores. Busque por nombre o correo para ver más."
   }
 }

@@ -9,6 +9,7 @@ import { useRef } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
+import { PriorityPill } from '@/components/ui/PriorityPill';
 import type { Ticket } from '@/types/api';
 
 const columnHelper = createColumnHelper<Ticket>();
@@ -42,10 +43,11 @@ export function VirtualTicketTable({ tickets, embedded = false }: VirtualTicketT
       header: () => t('tickets.status'),
       size: 160,
     }),
-    columnHelper.accessor((row) => row.priority.label, {
+    columnHelper.accessor((row) => row.priority, {
       id: 'priority',
       header: () => t('tickets.priority'),
       size: 140,
+      cell: (info) => <PriorityPill priority={info.getValue()} />,
     }),
   ];
 

@@ -30,7 +30,6 @@ export default function TicketsPage() {
 
       <TicketTableSection
         kind="raised"
-        userId={user.id}
         title={t('tickets.raisedByMe')}
         description={t('tickets.raisedByMeHint')}
         emptyMessage={t('tickets.raisedByMeEmpty')}
@@ -39,7 +38,6 @@ export default function TicketsPage() {
 
       <TicketTableSection
         kind="assigned"
-        userId={user.id}
         title={t('tickets.assignedToMe')}
         description={t('tickets.assignedToMeHint')}
         emptyMessage={t('tickets.assignedToMeEmpty')}
